@@ -188,21 +188,7 @@
         (mf/use-callback
          (mf/deps file frames)
          (fn [_]
-           (when (seq frames)
-             (let [filename (dm/str (:name file) ".pdf")
-                   xform    (comp (map :id)
-                                  (map (fn [id]
-                                         {:file-id  (:id file)
-                                          :page-id   page-id
-                                          :frame-id id})))]
-               (st/emit! (msg/info (tr "workspace.options.exporting-object") {:timeout nil}))
-               (->> (rp/query! :export-frames (into [] xform frames))
-                    (rx/subs
-                     (fn [body]
-                       (dom/trigger-download filename body))
-                     (fn [_error]
-                       (st/emit! (msg/error (tr "errors.unexpected-error"))))
-                     (st/emitf msg/hide)))))))
+           (st/emit! (de/show-workspace-export-frames-dialog frames))))
 
         on-item-hover
         (mf/use-callback
